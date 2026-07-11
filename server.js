@@ -423,8 +423,25 @@ app.post('/api/parse-csv', upload.single('csvFile'), (req, res) => {
     const contacts = [];
     const filePath = req.file.path;
 
+    // Detect if CSV has headers by inspecting the first line
+    let csvOptions = {};
+    try {
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const firstLine = fileContent.split(/\r?\n/)[0] || '';
+        const columns = firstLine.split(/[,\t;]/);
+        const firstCol = columns[0] ? columns[0].replace(/^\uFEFF/, '').trim() : '';
+        const cleanNum = firstCol.replace(/\D/g, '');
+        
+        // If the first column first row contains a phone number (9-15 digits), assume NO headers
+        if (cleanNum.length >= 9 && cleanNum.length <= 15) {
+            csvOptions = { headers: ['number', 'name', 'company'] };
+        }
+    } catch (e) {
+        console.error("Error detecting CSV headers:", e);
+    }
+
     fs.createReadStream(filePath)
-        .pipe(csvParser())
+        .pipe(csvParser(csvOptions))
         .on('data', (row) => {
             // Standardize columns (ignore case/spacing, strip UTF-8 BOM if present)
             const cleanedRow = {};
@@ -856,10 +873,27 @@ app.post('/api/parse-any-file', upload.single('file'), (req, res) => {
             });
         } 
         else {
+            // Detect if CSV has headers by inspecting the first line
+            let csvOptions = {};
+            try {
+                const fileContent = fs.readFileSync(filePath, 'utf8');
+                const firstLine = fileContent.split(/\r?\n/)[0] || '';
+                const columns = firstLine.split(/[,\t;]/);
+                const firstCol = columns[0] ? columns[0].replace(/^\uFEFF/, '').trim() : '';
+                const cleanNum = firstCol.replace(/\D/g, '');
+                
+                // If the first column first row contains a phone number (9-15 digits), assume NO headers
+                if (cleanNum.length >= 9 && cleanNum.length <= 15) {
+                    csvOptions = { headers: ['number', 'name', 'company'] };
+                }
+            } catch (e) {
+                console.error("Error detecting CSV headers:", e);
+            }
+
             // Fallback: Parse CSV via standard csvParser
             const parserContacts = [];
             fs.createReadStream(filePath)
-                .pipe(csvParser())
+                .pipe(csvParser(csvOptions))
                 .on('data', (row) => {
                     const cleanedRow = {};
                     for (const key in row) {
