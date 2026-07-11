@@ -57,6 +57,15 @@
                     </svg>
                     Number Checker
                 </a>
+                <a href="#contactgroups" class="nav-link" data-tab="contactgroups">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    Contact Groups
+                </a>
             </nav>
 
             <div class="connection-status-sidebar">
@@ -242,17 +251,7 @@
                                     </div>
                                     <button class="btn btn-secondary btn-sm" id="parse-manual-btn">Load Contacts List</button>
                                 </div>
-
-                                <!-- Save Group Panel (Visible when contacts are loaded) -->
-                                <div id="save-group-panel" style="display: none; margin-top: 15px; background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: var(--border-radius-sm); border: 1px dashed var(--glass-border);">
-                                    <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 6px;">Save these contacts as a Group:</label>
-                                    <div style="display: flex; gap: 8px;">
-                                        <input type="text" id="new-group-name" class="variant-textarea" style="padding: 6px 10px; font-size: 0.85rem; height: 36px;" placeholder="e.g. BAFFA Members List">
-                                        <button id="save-group-btn" class="btn btn-emerald" style="padding: 6px 12px; font-size: 0.85rem; white-space: nowrap; height: 36px; display: flex; align-items: center; justify-content: center;">
-                                            Save Group
-                                        </button>
-                                    </div>
-                                </div>
+>
 
                                 <div class="delay-settings-row">
                                     <div class="form-group">
@@ -622,6 +621,76 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- Contact Groups Tab -->
+                <div id="tab-contactgroups" class="tab-panel">
+                    <div class="dashboard-grid" style="grid-template-columns: 1fr 1.2fr; gap: 24px; align-items: start; max-width: 1200px; margin: 0 auto; padding: 20px;">
+                        <!-- Create Group Card -->
+                        <div class="card glass-card">
+                            <div class="card-header">
+                                <h3>Create Contact Group</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group" style="margin-bottom: 16px;">
+                                    <label for="group-create-name" style="font-weight: 500; font-size: 0.85rem; color: var(--text-secondary);">Group Name</label>
+                                    <input type="text" id="group-create-name" class="variant-textarea" placeholder="e.g. BAFFA WhatsApp Group" style="height: 42px; margin-top: 6px;">
+                                </div>
+
+                                <div class="upload-options-tabs" style="margin-bottom: 16px;">
+                                    <button class="upload-tab-btn active" id="group-tab-btn-file" data-group-type="file" style="padding: 8px 16px; font-size: 0.85rem;">File Upload</button>
+                                    <button class="upload-tab-btn" id="group-tab-btn-manual" data-group-type="manual" style="padding: 8px 16px; font-size: 0.85rem;">Manual Paste</button>
+                                </div>
+
+                                <!-- File Upload Area -->
+                                <div id="group-upload-file-section" class="upload-container">
+                                    <div class="file-drag-area" id="group-drop-zone" style="border: 2px dashed var(--glass-border); padding: 30px; text-align: center; border-radius: var(--border-radius-md); background: rgba(255,255,255,0.01); cursor: pointer; transition: var(--transition-smooth);">
+                                        <input type="file" id="group-file-input" accept=".csv,.xlsx,.xls,.txt" style="display: none;">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="upload-cloud-icon" style="width: 40px; height: 40px; color: var(--text-muted); margin-bottom: 12px;">
+                                            <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 8L12 3M12 3L7 8M12 3V15" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <p style="font-size: 0.85rem; margin-bottom: 4px;">Drag and drop your file here, or <span class="browse-link" style="color: var(--accent-emerald); font-weight:600;">browse files</span></p>
+                                        <small style="color: var(--text-muted); font-size: 0.75rem;">Supports: Excel (.xlsx/.xls), CSV, TXT</small>
+                                    </div>
+                                    <div class="csv-status" id="group-file-status-box" style="display: none; align-items: center; justify-content: space-between; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 12px; border-radius: var(--border-radius-sm); margin-top: 10px;">
+                                        <div class="csv-status-details" style="display: flex; align-items: center; gap: 10px;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="csv-file-icon" style="width: 24px; height: 24px; color: var(--accent-emerald);">
+                                                <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21 20 20.5304 20 20V8L14 2Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            <div class="csv-file-meta" style="display: flex; flex-direction: column;">
+                                                <span class="file-name" id="group-file-name" style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">contacts.csv</span>
+                                                <span class="contacts-loaded" id="group-file-count" style="font-size: 0.75rem; color: var(--text-secondary);">File selected</span>
+                                            </div>
+                                        </div>
+                                        <button class="remove-csv-btn" id="group-clear-file-btn" title="Remove file" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem;">&times;</button>
+                                    </div>
+                                </div>
+
+                                <!-- Manual Paste Area -->
+                                <div id="group-upload-manual-section" class="upload-container" style="display: none; margin-top: 10px;">
+                                    <div class="form-group">
+                                        <label for="group-manual-input" style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 6px;">Paste Contacts (one per line: Number,Name,Company)</label>
+                                        <textarea id="group-manual-input" rows="6" placeholder="8801700000000,Arnob,Google&#10;8801811111111,Karim,SoftCorp" style="width: 100%; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: var(--border-radius-sm); padding: 8px 12px; color: var(--text-primary); font-family: var(--font-body); font-size: 0.85rem; resize: vertical; outline: none; transition: var(--transition-smooth);"></textarea>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-emerald" id="group-create-submit-btn" style="width: 100%; margin-top: 20px; height: 42px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight:600;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                    Create Contact Group
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Saved Groups List Card -->
+                        <div class="card glass-card" style="min-height: 480px;">
+                            <div class="card-header">
+                                <h3>Saved Contact Groups</h3>
+                            </div>
+                            <div class="card-body" style="max-height: 520px; overflow-y: auto; padding-right: 5px;" id="groups-list-container">
+                                <!-- Dynamic group cards will be rendered here by app.js -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>

@@ -195,7 +195,8 @@ function switchTab(tabId) {
         'dashboard': 'System Dashboard',
         'bulksender': 'Bulk Marketing Campaign Builder',
         'history': 'Campaign Outreach Archives',
-        'numberchecker': 'WhatsApp Number Checker & Filter'
+        'numberchecker': 'WhatsApp Number Checker & Filter',
+        'contactgroups': 'Contact Group Database'
     };
     elements.currentTabTitle.textContent = titleMap[tabId] || 'WapDam';
 
@@ -441,15 +442,6 @@ function initManualContactsParser() {
 function updateStatsUI() {
     elements.statPendingQueue.textContent = loadedContacts.length;
     renderContactsQueue();
-    
-    // Toggle Save Group Panel depending on contacts list size
-    if (elements.saveGroupPanel) {
-        if (loadedContacts.length > 0) {
-            elements.saveGroupPanel.style.display = 'block';
-        } else {
-            elements.saveGroupPanel.style.display = 'none';
-        }
-    }
 }
 
 async function loadContactGroups() {
@@ -459,7 +451,7 @@ async function loadContactGroups() {
         if (data.success) {
             contactGroups = data.groups;
             
-            // Populate select dropdown options
+            // Populate select dropdown options in Bulk Sender
             if (elements.groupSelect) {
                 elements.groupSelect.innerHTML = '<option value="">-- Select Saved Group --</option>';
                 
@@ -470,16 +462,132 @@ async function loadContactGroups() {
                     elements.groupSelect.appendChild(option);
                 });
             }
+            
+            // Render the groups list grid in the dedicated tab
+            renderSavedGroupsList();
         }
     } catch (err) {
         console.error('Error fetching contact groups:', err);
     }
 }
 
+function renderSavedGroupsList() {
+    if (!elements.groupsListContainer) return;
+    
+    if (contactGroups.length === 0) {
+        elements.groupsListContainer.innerHTML = `
+            <div class="empty-groups-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto;">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span>No saved groups found. Create one using the form on the left.</span>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    contactGroups.forEach(group => {
+        const dateStr = new Date(group.createdAt).toLocaleDateString();
+        html += `
+            <div class="group-card-item">
+                <div class="group-card-info">
+                    <span class="group-card-title">${group.name}</span>
+                    <div class="group-card-meta">
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 2px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                            ${group.contactsCount} contacts
+                        </span>
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 2px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            ${dateStr}
+                        </span>
+                    </div>
+                </div>
+                <div class="group-card-actions">
+                    <button class="btn btn-emerald btn-sm btn-icon-label send-campaign-btn" data-id="${group.id}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        Send Campaign
+                    </button>
+                    <button class="btn btn-secondary btn-sm delete-card-group-btn" data-id="${group.id}" style="border: 1px solid var(--accent-red); color: var(--accent-red); background: transparent; padding: 6px 10px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; vertical-align: middle;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    elements.groupsListContainer.innerHTML = html;
+    
+    // Add event listeners to card actions
+    elements.groupsListContainer.querySelectorAll('.send-campaign-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const groupId = btn.getAttribute('data-id');
+            const group = contactGroups.find(g => g.id === groupId);
+            if (group) {
+                // Set Bulk Sender targets list state
+                loadedContacts = group.contacts;
+                
+                // Set Bulk Sender tab dropdown selection state
+                if (elements.groupSelect) {
+                    elements.groupSelect.value = groupId;
+                }
+                
+                // Show file/group info on Bulk Sender Tab
+                elements.csvFileInput.value = '';
+                elements.dropZone.style.display = 'none';
+                elements.csvStatusBox.style.display = 'flex';
+                elements.csvFileName.textContent = `Group: ${group.name}`;
+                elements.csvContactsCount.textContent = `${group.contactsCount} contacts loaded from saved group.`;
+                elements.deleteGroupBtn.style.display = 'inline-flex';
+                
+                showToast(`Group "${group.name}" loaded into campaign builder.`, 'success');
+                updateStatsUI();
+                
+                // Switch tab to Bulk Sender
+                switchTab('bulksender');
+            }
+        });
+    });
+    
+    elements.groupsListContainer.querySelectorAll('.delete-card-group-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const groupId = btn.getAttribute('data-id');
+            const group = contactGroups.find(g => g.id === groupId);
+            if (group) {
+                if (confirm(`Are you sure you want to delete the group "${group.name}"?`)) {
+                    try {
+                        const res = await fetch(`/api/contact-groups/${groupId}`, {
+                            method: 'DELETE'
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            showToast(`Group "${group.name}" deleted.`, 'info');
+                            
+                            // If this group was active in bulk sender, reset it
+                            if (elements.groupSelect && elements.groupSelect.value === groupId) {
+                                resetCsvUploadState();
+                            }
+                            
+                            await loadContactGroups();
+                        } else {
+                            showToast(data.error || 'Failed to delete group.', 'error');
+                        }
+                    } catch (err) {
+                        showToast('Error deleting group: ' + err.message, 'error');
+                    }
+                }
+            }
+        });
+    });
+}
+
 function initContactGroups() {
     loadContactGroups();
 
-    // Dropdown change listener
+    // Dropdown change listener (Bulk Sender Selector)
     elements.groupSelect.addEventListener('change', (e) => {
         const groupId = e.target.value;
         if (!groupId) {
@@ -505,47 +613,188 @@ function initContactGroups() {
         }
     });
 
-    // Save group button listener
-    elements.saveGroupBtn.addEventListener('click', async () => {
-        const name = elements.newGroupName.value.trim();
-        if (!name) {
+    // Toggle Create Group upload method tabs
+    let currentGroupUploadType = 'file';
+    
+    elements.groupTabBtnFile.addEventListener('click', () => {
+        elements.groupTabBtnFile.classList.add('active');
+        elements.groupTabBtnManual.classList.remove('active');
+        elements.groupUploadFileSection.style.display = 'block';
+        elements.groupUploadManualSection.style.display = 'none';
+        currentGroupUploadType = 'file';
+    });
+    
+    elements.groupTabBtnManual.addEventListener('click', () => {
+        elements.groupTabBtnManual.classList.add('active');
+        elements.groupTabBtnFile.classList.remove('active');
+        elements.groupUploadManualSection.style.display = 'block';
+        elements.groupUploadFileSection.style.display = 'none';
+        currentGroupUploadType = 'manual';
+    });
+
+    // Dropzone click triggers hidden file input
+    elements.groupDropZone.addEventListener('click', () => elements.groupFileInput.click());
+    
+    let groupFileToUpload = null;
+    
+    // File selection
+    elements.groupFileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleGroupFileSelect(e.target.files[0]);
+        }
+    });
+
+    elements.groupDropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        elements.groupDropZone.classList.add('drag-over');
+    });
+
+    elements.groupDropZone.addEventListener('dragleave', () => {
+        elements.groupDropZone.classList.remove('drag-over');
+    });
+
+    elements.groupDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        elements.groupDropZone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length) {
+            elements.groupFileInput.files = e.dataTransfer.files;
+            handleGroupFileSelect(e.dataTransfer.files[0]);
+        }
+    });
+    
+    elements.groupClearFileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetGroupFileSelectState();
+    });
+    
+    function handleGroupFileSelect(file) {
+        groupFileToUpload = file;
+        elements.groupDropZone.style.display = 'none';
+        elements.groupFileStatusBox.style.display = 'flex';
+        elements.groupFileName.textContent = file.name;
+        elements.groupFileCount.textContent = 'Ready to parse & save';
+    }
+    
+    function resetGroupFileSelectState() {
+        groupFileToUpload = null;
+        elements.groupFileInput.value = '';
+        elements.groupDropZone.style.display = 'block';
+        elements.groupFileStatusBox.style.display = 'none';
+    }
+
+    // Create group submit button click handler
+    elements.groupCreateSubmitBtn.addEventListener('click', async () => {
+        const groupName = elements.groupCreateName.value.trim();
+        if (!groupName) {
             showToast('Please enter a group name.', 'warning');
             return;
         }
-
-        if (loadedContacts.length === 0) {
-            showToast('No contacts to save. Load some contacts first.', 'warning');
-            return;
+        
+        let parsedContacts = [];
+        
+        if (currentGroupUploadType === 'file') {
+            if (!groupFileToUpload) {
+                showToast('Please select or upload a contacts file.', 'warning');
+                return;
+            }
+            
+            // Upload to server to parse
+            const formData = new FormData();
+            formData.append('file', groupFileToUpload);
+            
+            try {
+                elements.groupCreateSubmitBtn.disabled = true;
+                elements.groupCreateSubmitBtn.textContent = 'Parsing File...';
+                
+                const parseRes = await fetch('/api/parse-any-file', {
+                    method: 'POST',
+                    body: formData
+                });
+                const parseData = await parseRes.json();
+                
+                if (!parseData.success) {
+                    throw new Error(parseData.error || 'Failed to parse file.');
+                }
+                
+                parsedContacts = parseData.contacts;
+            } catch (err) {
+                elements.groupCreateSubmitBtn.disabled = false;
+                elements.groupCreateSubmitBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Create Contact Group
+                `;
+                showToast(err.message, 'error');
+                return;
+            }
+        } else {
+            // Manual paste parsing
+            const manualText = elements.groupManualInput.value.trim();
+            if (!manualText) {
+                showToast('Please paste contacts.', 'warning');
+                return;
+            }
+            
+            const lines = manualText.split('\n');
+            lines.forEach(line => {
+                if (!line.trim()) return;
+                const parts = line.split(',');
+                const number = parts[0] ? parts[0].trim() : '';
+                const name = parts[1] ? parts[1].trim() : 'Valued Customer';
+                const company = parts[2] ? parts[2].trim() : '';
+                
+                if (number) {
+                    parsedContacts.push({ number, name, company });
+                }
+            });
+            
+            if (parsedContacts.length === 0) {
+                showToast('Could not find any numbers. Ensure format matches: Number,Name,Company', 'warning');
+                return;
+            }
         }
-
+        
+        // Save to Database
         try {
-            elements.saveGroupBtn.disabled = true;
-            const res = await fetch('/api/contact-groups', {
+            elements.groupCreateSubmitBtn.disabled = true;
+            elements.groupCreateSubmitBtn.textContent = 'Saving Group...';
+            
+            const saveRes = await fetch('/api/contact-groups', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, contacts: loadedContacts })
+                body: JSON.stringify({ name: groupName, contacts: parsedContacts })
             });
-            const data = await res.json();
-            elements.saveGroupBtn.disabled = false;
-
-            if (data.success) {
-                showToast(`Group "${name}" saved successfully!`, 'success');
-                elements.newGroupName.value = '';
+            const saveData = await saveRes.json();
+            
+            elements.groupCreateSubmitBtn.disabled = false;
+            elements.groupCreateSubmitBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Create Contact Group
+            `;
+            
+            if (saveData.success) {
+                showToast(`Group "${groupName}" containing ${parsedContacts.length} contacts saved!`, 'success');
                 
-                // Reload dropdown options and auto-select the newly saved group
+                // Clear fields
+                elements.groupCreateName.value = '';
+                elements.groupManualInput.value = '';
+                resetGroupFileSelectState();
+                
+                // Refresh list and dropdowns
                 await loadContactGroups();
-                elements.groupSelect.value = data.group.id;
-                elements.deleteGroupBtn.style.display = 'inline-flex';
             } else {
-                showToast(data.error || 'Failed to save group.', 'error');
+                showToast(saveData.error || 'Failed to save group.', 'error');
             }
         } catch (err) {
-            elements.saveGroupBtn.disabled = false;
+            elements.groupCreateSubmitBtn.disabled = false;
+            elements.groupCreateSubmitBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Create Contact Group
+            `;
             showToast('Error saving group: ' + err.message, 'error');
         }
     });
 
-    // Delete group button listener
+    // Delete group dropdown button listener
     elements.deleteGroupBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         const groupId = elements.groupSelect.value;

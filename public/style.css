@@ -1459,3 +1459,70 @@ input:checked + .slider:before {
     100% { opacity: 0.7; }
 }
 
+/* Contact Groups Layout & Cards */
+.group-card-item {
+    background: rgba(30, 41, 59, 0.25);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-md);
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition-smooth);
+}
+
+.group-card-item:hover {
+    background: rgba(30, 41, 59, 0.4);
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+.group-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.group-card-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.group-card-meta {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 12px;
+}
+
+.group-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.group-card-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-icon-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.empty-groups-placeholder {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px 20px;
+    font-size: 0.9rem;
+    border: 1px dashed var(--glass-border);
+    border-radius: var(--border-radius-md);
+    background: rgba(255, 255, 255, 0.01);
+}
+
