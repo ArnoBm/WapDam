@@ -1268,3 +1268,118 @@ textarea {
     border: 1px solid rgba(16, 185, 129, 0.15);
 }
 
+/* Anti-Ban Switch Toggle */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 22px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .4s;
+    border-radius: 22px;
+    border: 1px solid var(--glass-border);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-secondary);
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--accent-emerald-glow);
+    border-color: var(--accent-emerald);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+    background-color: var(--accent-emerald);
+}
+
+/* Variant Box Styling */
+.variant-box {
+    position: relative;
+    background: rgba(15, 23, 42, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-md);
+    padding: 12px;
+    transition: var(--transition-smooth);
+}
+
+.variant-box:hover {
+    border-color: var(--glass-border-focus);
+}
+
+.variant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.variant-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-emerald);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.remove-variant-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent-red);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transition-smooth);
+}
+
+.remove-variant-btn:hover {
+    color: #ff6b6b;
+    transform: scale(1.03);
+}
+
+.variant-textarea {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-sm);
+    padding: 8px 12px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    resize: vertical;
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+.variant-textarea:focus {
+    border-color: var(--glass-border-focus);
+    box-shadow: 0 0 8px var(--accent-emerald-glow);
+}
+

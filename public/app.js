@@ -435,7 +435,17 @@ function updateStatsUI() {
 // ----------------------------------------------------
 // 4. TEMPLATE WRITER & PREVIEW COMPOSER
 // ----------------------------------------------------
+let activeTextarea = null;
+let variantCount = 0;
+
 function initTemplateComposer() {
+    activeTextarea = elements.messageTemplate;
+    
+    // Set active text area on focus
+    elements.messageTemplate.addEventListener('focus', () => {
+        activeTextarea = elements.messageTemplate;
+    });
+
     // Dynamic preview drawing
     elements.messageTemplate.addEventListener('input', updateMessagePreview);
     
@@ -443,14 +453,130 @@ function initTemplateComposer() {
     elements.tagBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const tag = btn.getAttribute('data-tag');
-            insertTextAtCursor(elements.messageTemplate, tag);
-            updateMessagePreview();
+            if (activeTextarea) {
+                insertTextAtCursor(activeTextarea, tag);
+                updateMessagePreview();
+            }
         });
+    });
+
+    // Toggle Multi-Variant Mode
+    const antiBanToggle = document.getElementById('anti-ban-toggle');
+    const singleTemplateGroup = document.getElementById('single-template-group');
+    const multiVariantGroup = document.getElementById('multi-variant-group');
+    const addVariantBtn = document.getElementById('add-variant-btn');
+
+    antiBanToggle.addEventListener('change', () => {
+        if (antiBanToggle.checked) {
+            singleTemplateGroup.style.display = 'none';
+            multiVariantGroup.style.display = 'block';
+            
+            const container = document.getElementById('variants-container');
+            if (container.children.length === 0) {
+                // Pre-populate with 3 variants
+                addVariantBox("Hello {Name}, hope you are doing well.");
+                addVariantBox("Hi {Name}, hope your company {Company} is doing great.");
+                addVariantBox("Hey {Name}! Quick question about {Company}...");
+            }
+            
+            // Set active text area to the first variant
+            const firstVariant = container.querySelector('.variant-textarea');
+            if (firstVariant) {
+                firstVariant.focus();
+                activeTextarea = firstVariant;
+            }
+        } else {
+            singleTemplateGroup.style.display = 'block';
+            multiVariantGroup.style.display = 'none';
+            activeTextarea = elements.messageTemplate;
+        }
+        updateMessagePreview();
+    });
+
+    // Add variant button click
+    addVariantBtn.addEventListener('click', () => {
+        addVariantBox();
+    });
+}
+
+function addVariantBox(initialValue = '') {
+    variantCount++;
+    const container = document.getElementById('variants-container');
+    const box = document.createElement('div');
+    box.className = 'variant-box';
+    box.id = `variant-box-${variantCount}`;
+    
+    box.innerHTML = `
+        <div class="variant-header">
+            <span class="variant-title">Variant ${container.children.length + 1}</span>
+            <button type="button" class="remove-variant-btn" data-id="${variantCount}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px; margin-right: 4px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete
+            </button>
+        </div>
+        <textarea class="variant-textarea" rows="4" placeholder="Variant ${container.children.length + 1} template text...">${initialValue}</textarea>
+    `;
+    
+    container.appendChild(box);
+    
+    const textarea = box.querySelector('.variant-textarea');
+    
+    // Setup listeners
+    textarea.addEventListener('input', updateMessagePreview);
+    textarea.addEventListener('focus', () => {
+        activeTextarea = textarea;
+    });
+    
+    const deleteBtn = box.querySelector('.remove-variant-btn');
+    deleteBtn.addEventListener('click', () => {
+        box.remove();
+        reindexVariants();
+        updateMessagePreview();
+    });
+    
+    reindexVariants();
+}
+
+function reindexVariants() {
+    const container = document.getElementById('variants-container');
+    const boxes = container.querySelectorAll('.variant-box');
+    
+    boxes.forEach((box, index) => {
+        const title = box.querySelector('.variant-title');
+        title.textContent = `Variant ${index + 1}`;
+        
+        const textarea = box.querySelector('.variant-textarea');
+        textarea.placeholder = `Variant ${index + 1} template text...`;
+        
+        const deleteBtn = box.querySelector('.remove-variant-btn');
+        // Hide delete option if there are only 3 variants left
+        if (boxes.length <= 3) {
+            deleteBtn.style.display = 'none';
+        } else {
+            deleteBtn.style.display = 'flex';
+        }
     });
 }
 
 function updateMessagePreview() {
-    const template = elements.messageTemplate.value;
+    let template = '';
+    const antiBanToggle = document.getElementById('anti-ban-toggle');
+    
+    if (antiBanToggle && antiBanToggle.checked) {
+        const variantTextareas = document.querySelectorAll('.variant-textarea');
+        // Retrieve value of currently focused variant textarea, otherwise fallback to first
+        let targetTextarea = activeTextarea;
+        if (!targetTextarea || !targetTextarea.classList.contains('variant-textarea')) {
+            targetTextarea = variantTextareas[0];
+        }
+        template = targetTextarea ? targetTextarea.value : '';
+    } else {
+        template = elements.messageTemplate.value;
+    }
+
     if (!template) {
         elements.messagePreview.innerHTML = '<span style="color:var(--text-muted);font-style:italic;">Awaiting message input template...</span>';
         return;
@@ -533,10 +659,25 @@ function initCampaignControls() {
             return;
         }
 
-        const template = elements.messageTemplate.value.trim();
-        if (!template) {
-            showToast('Message template is empty.', 'warning');
-            return;
+        let template;
+        const antiBanToggle = document.getElementById('anti-ban-toggle');
+        if (antiBanToggle && antiBanToggle.checked) {
+            const variantTextareas = document.querySelectorAll('.variant-textarea');
+            const templates = Array.from(variantTextareas)
+                .map(ta => ta.value.trim())
+                .filter(val => val !== '');
+            
+            if (templates.length < 3) {
+                showToast('Anti-Ban requires at least 3 non-empty message variants.', 'warning');
+                return;
+            }
+            template = templates;
+        } else {
+            template = elements.messageTemplate.value.trim();
+            if (!template) {
+                showToast('Message template is empty.', 'warning');
+                return;
+            }
         }
 
         const minVal = parseInt(elements.minDelay.value) || 5;

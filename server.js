@@ -263,7 +263,19 @@ async function runCampaignNext() {
         // If it starts with '+', it was removed by \D filter.
     }
 
-    let text = activeCampaign.messageTemplate
+    let selectedTemplate = '';
+    if (Array.isArray(activeCampaign.messageTemplate)) {
+        if (activeCampaign.messageTemplate.length > 0) {
+            const randomIndex = Math.floor(Math.random() * activeCampaign.messageTemplate.length);
+            selectedTemplate = activeCampaign.messageTemplate[randomIndex];
+        } else {
+            selectedTemplate = 'Hello {name}'; // Fallback
+        }
+    } else {
+        selectedTemplate = activeCampaign.messageTemplate || '';
+    }
+
+    let text = selectedTemplate
         .replace(/{name}/gi, name)
         .replace(/{company}/gi, company);
 
