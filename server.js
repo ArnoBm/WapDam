@@ -54,6 +54,7 @@ let activeCampaign = {
     contacts: [],
     messageTemplate: '',
     delays: { min: 5, max: 15 },
+    media: null,
     logs: [],
     startedAt: null,
     completedAt: null
@@ -311,7 +312,14 @@ async function runCampaignNext() {
         // Double check number registration to avoid sending to invalid numbers
         const numberId = await client.getNumberId(serializedNumber);
         if (numberId) {
-            await client.sendMessage(numberId._serialized, text);
+            if (activeCampaign.media && activeCampaign.media.path) {
+                const { MessageMedia } = require('whatsapp-web.js');
+                const media = MessageMedia.fromFilePath(activeCampaign.media.path);
+                media.filename = activeCampaign.media.originalname;
+                await client.sendMessage(numberId._serialized, media, { caption: text });
+            } else {
+                await client.sendMessage(numberId._serialized, text);
+            }
             activeCampaign.sent++;
             
             // 3. Emit 'sent' status
@@ -418,9 +426,42 @@ function finishCampaign(finalStatus) {
 
     io.emit('campaign-update', activeCampaign);
     console.log(`Campaign ${activeCampaign.name} finished with status: ${finalStatus}`);
+
+    // Cleanup active campaign media file
+    cleanupCampaignMedia();
+}
+
+function cleanupCampaignMedia() {
+    if (activeCampaign && activeCampaign.media && activeCampaign.media.path) {
+        try {
+            if (fs.existsSync(activeCampaign.media.path)) {
+                fs.unlinkSync(activeCampaign.media.path);
+            }
+            console.log('[Cleanup] Campaign media file removed from disk:', activeCampaign.media.path);
+        } catch (e) {
+            console.error('Error cleaning up media file:', e);
+        }
+        activeCampaign.media = null;
+    }
 }
 
 // API Routes
+
+// Upload campaign media endpoint
+app.post('/api/upload-media', upload.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ success: false, error: 'No file uploaded.' });
+    }
+    res.json({
+        success: true,
+        media: {
+            filename: req.file.filename,
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            path: req.file.path
+        }
+    });
+});
 
 // Test single message sending
 app.post('/api/send-single', async (req, res) => {
@@ -554,6 +595,7 @@ app.post('/api/campaign/start', (req, res) => {
             contacts: contacts,
             messageTemplate: messageTemplate,
             delays: { min: minDelay || 5, max: maxDelay || 15 },
+            media: req.body.media || null,
             logs: [{ time: new Date().toLocaleTimeString(), text: 'Campaign started.', type: 'info' }],
             startedAt: new Date().toISOString(),
             completedAt: null
@@ -610,6 +652,8 @@ app.post('/api/campaign/reset', (req, res) => {
         return res.status(400).json({ success: false, error: 'Cannot reset a running campaign.' });
     }
 
+    cleanupCampaignMedia();
+
     activeCampaign = {
         id: null,
         name: '',
@@ -620,6 +664,7 @@ app.post('/api/campaign/reset', (req, res) => {
         contacts: [],
         messageTemplate: '',
         delays: { min: 5, max: 15 },
+        media: null,
         logs: [],
         startedAt: null,
         completedAt: null

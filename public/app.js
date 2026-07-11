@@ -8,6 +8,7 @@ let currentActiveTab = 'dashboard';
 let renderedCampaignLogCount = 0;
 let renderedCampaignId = null;
 let contactGroups = [];
+let selectedMediaFile = null;
 
 // DOM Elements
 const elements = {
@@ -85,6 +86,16 @@ const elements = {
     queueCountBadge: document.getElementById('queue-count-badge'),
     queueTableBody: document.getElementById('queue-table-body'),
 
+    // Bulk Campaign Media Attachment Elements
+    mediaFileInput: document.getElementById('campaign-media-input'),
+    mediaDropZone: document.getElementById('campaign-media-dropzone'),
+    mediaStatusBox: document.getElementById('campaign-media-status-box'),
+    mediaFileName: document.getElementById('campaign-media-filename'),
+    mediaFileSize: document.getElementById('campaign-media-filesize'),
+    mediaPreview: document.getElementById('campaign-media-preview'),
+    mediaIcon: document.getElementById('campaign-media-icon'),
+    clearMediaBtn: document.getElementById('clear-media-btn'),
+
     // Group Selector (Bulk Sender Tab)
     groupSelect: document.getElementById('group-select'),
     deleteGroupBtn: document.getElementById('delete-group-btn'),
@@ -149,6 +160,7 @@ const elements = {
 document.addEventListener('DOMContentLoaded', () => {
     initTabNavigation();
     initCsvUploader();
+    initCampaignMediaUploader();
     initManualContactsParser();
     initTemplateComposer();
     initCampaignControls();
@@ -377,6 +389,88 @@ function initCsvUploader() {
         e.stopPropagation();
         resetCsvUploadState();
     });
+}
+
+function initCampaignMediaUploader() {
+    if (!elements.mediaDropZone || !elements.mediaFileInput) return;
+
+    // Trigger file selection on dropzone click
+    elements.mediaDropZone.addEventListener('click', () => elements.mediaFileInput.click());
+
+    // Input changes
+    elements.mediaFileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleCampaignMediaSelect(e.target.files[0]);
+        }
+    });
+
+    // Drag events
+    elements.mediaDropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        elements.mediaDropZone.classList.add('drag-over');
+    });
+
+    elements.mediaDropZone.addEventListener('dragleave', () => {
+        elements.mediaDropZone.classList.remove('drag-over');
+    });
+
+    elements.mediaDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        elements.mediaDropZone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length) {
+            elements.mediaFileInput.files = e.dataTransfer.files;
+            handleCampaignMediaSelect(e.dataTransfer.files[0]);
+        }
+    });
+
+    // Detach button
+    elements.clearMediaBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetCampaignMediaState();
+    });
+}
+
+function handleCampaignMediaSelect(file) {
+    // WhatsApp file size limit is 16MB
+    const maxSize = 16 * 1024 * 1024; 
+    if (file.size > maxSize) {
+        showToast('File is too large! Maximum limit is 16MB.', 'error');
+        resetCampaignMediaState();
+        return;
+    }
+
+    selectedMediaFile = file;
+    elements.mediaDropZone.style.display = 'none';
+    elements.mediaStatusBox.style.display = 'flex';
+    elements.mediaFileName.textContent = file.name;
+    
+    // Format file size
+    let sizeStr = (file.size / 1024).toFixed(1) + ' KB';
+    if (file.size > 1024 * 1024) {
+        sizeStr = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+    elements.mediaFileSize.textContent = sizeStr;
+
+    // Create thumbnail if image
+    if (file.type.startsWith('image/')) {
+        elements.mediaPreview.src = URL.createObjectURL(file);
+        elements.mediaPreview.style.display = 'block';
+        elements.mediaIcon.style.display = 'none';
+    } else {
+        elements.mediaPreview.src = '';
+        elements.mediaPreview.style.display = 'none';
+        elements.mediaIcon.style.display = 'block';
+    }
+}
+
+function resetCampaignMediaState() {
+    selectedMediaFile = null;
+    elements.mediaFileInput.value = '';
+    elements.mediaDropZone.style.display = 'block';
+    elements.mediaStatusBox.style.display = 'none';
+    elements.mediaPreview.src = '';
+    elements.mediaPreview.style.display = 'none';
+    elements.mediaIcon.style.display = 'block';
 }
 
 async function handleCsvFile(file) {
@@ -1134,22 +1228,54 @@ function initCampaignControls() {
             return;
         }
 
-        const payload = {
-            name: elements.campaignName.value.trim(),
-            contacts: loadedContacts,
-            messageTemplate: template,
-            minDelay: minVal,
-            maxDelay: maxVal
-        };
+        let mediaPayload = null;
 
         try {
             elements.startCampaignBtn.disabled = true;
+            
+            // If user attached a media file, upload it first
+            if (selectedMediaFile) {
+                elements.startCampaignBtn.textContent = 'Uploading Media...';
+                const formData = new FormData();
+                formData.append('file', selectedMediaFile);
+
+                const uploadRes = await fetch('/api/upload-media', {
+                    method: 'POST',
+                    body: formData
+                });
+                const uploadData = await uploadRes.json();
+                if (!uploadData.success) {
+                    throw new Error(uploadData.error || 'Failed to upload media attachment.');
+                }
+                mediaPayload = uploadData.media;
+            }
+
+            elements.startCampaignBtn.textContent = 'Starting...';
+
+            const payload = {
+                name: elements.campaignName.value.trim(),
+                contacts: loadedContacts,
+                messageTemplate: template,
+                minDelay: minVal,
+                maxDelay: maxVal,
+                media: mediaPayload
+            };
+
             const res = await fetch('/api/campaign/start', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
             const data = await res.json();
+            
+            // Restore button text
+            elements.startCampaignBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                Start Campaign
+            `;
+
             if (data.success) {
                 showToast('Campaign started successfully.', 'success');
             } else {
@@ -1157,6 +1283,12 @@ function initCampaignControls() {
                 elements.startCampaignBtn.disabled = false;
             }
         } catch (e) {
+            elements.startCampaignBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                Start Campaign
+            `;
             showToast('Error starting campaign: ' + e.message, 'error');
             elements.startCampaignBtn.disabled = false;
         }
@@ -1204,6 +1336,7 @@ function initCampaignControls() {
                     elements.maxDelay.value = '15';
                     updateMessagePreview();
                     resetCsvUploadState();
+                    resetCampaignMediaState();
                     showToast('Form reset.', 'info');
                 }
             } catch (e) {
