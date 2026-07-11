@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WapDam | WhatsApp Automation & Outreach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <svg class="brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 13.91 2.54 15.69 3.47 17.21L2.05 22.38C1.94 22.78 2.05 23.2 2.34 23.49C2.54 23.69 2.82 23.8 3.1 23.8C3.21 23.8 3.32 23.78 3.43 23.75L8.7 22.31C10.15 23.11 11.82 23.57 13.6 23.57C19.12 23.57 23.6 19.09 23.6 13.57C23.6 10.91 22.56 8.41 20.68 6.53C18.8 4.65 16.3 3.6 13.63 3.6C13.08 3.6 12.54 3.64 12 3.73V2ZM13.6 5.6C15.77 5.6 17.8 6.45 19.33 7.98C20.86 9.51 21.71 11.54 21.71 13.71C21.71 18.19 18.08 21.82 13.6 21.82C12.18 21.82 10.82 21.45 9.64 20.76L9.36 20.6L5.33 21.7L6.45 17.62L6.27 17.33C5.52 16.14 5.12 14.75 5.12 13.31C5.12 8.83 8.75 5.2 13.23 5.2C13.35 5.2 13.47 5.2 13.6 5.2V5.6ZM9.56 9.07C9.36 9.07 9.04 9.15 8.77 9.44C8.5 9.73 7.74 10.45 7.74 11.91C7.74 13.37 8.8 14.78 8.95 14.98C9.1 15.18 11.03 18.15 14 19.43C14.7 19.73 15.25 19.91 15.68 20.05C16.39 20.27 17.03 20.24 17.54 20.16C18.11 20.08 19.29 19.45 19.54 18.75C19.79 18.05 19.79 17.45 19.71 17.32C19.64 17.19 19.43 17.11 19.11 16.95C18.79 16.79 17.22 16.02 16.93 15.91C16.64 15.8 16.43 15.75 16.22 16.06C16.01 16.37 15.4 17.11 15.22 17.32C15.04 17.53 14.85 17.55 14.53 17.39C14.21 17.23 13.18 16.89 11.96 15.8C11.01 14.95 10.37 13.9 10.18 13.58C9.99 13.26 10.16 13.09 10.32 12.93C10.46 12.79 10.64 12.56 10.8 12.37C10.96 12.18 11.01 12.05 11.12 11.84C11.23 11.63 11.17 11.45 11.09 11.29C11.01 11.13 10.4 9.62 10.14 9C9.89 8.39 9.63 8.47 9.44 8.47L9.04 8.45C8.84 8.45 8.52 8.53 8.25 8.82C7.98 9.11 7.22 9.83 7.22 11.29C7.22 12.75 8.28 14.16 8.43 14.36C8.58 14.56 10.47 17.47 13.38 18.73C14.07 19.03 14.61 19.21 15.03 19.34C15.72 19.56 16.35 19.53 16.85 19.45C17.41 19.37 18.57 18.75 18.81 18.06C19.06 17.37 19.06 16.78 18.98 16.65C18.91 16.52 18.7 16.44 18.38 16.28L18.06 16.12L15.22 14.73L9.56 9.07Z" fill="url(#brandGrad)" />
+                    <defs>
+                        <linearGradient id="brandGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#10B981" />
+                            <stop stop-color="#059669" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="brand-text">
+                    <h1>WapDam</h1>
+                    <span>Outreach Engine</span>
+                </div>
+            </div>
+
+            <nav class="nav-links">
+                <a href="#dashboard" class="nav-link active" data-tab="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                        <rect x="3" y="3" width="7" height="9" rx="1" />
+                        <rect x="14" y="3" width="7" height="5" rx="1" />
+                        <rect x="14" y="12" width="7" height="9" rx="1" />
+                        <rect x="3" y="16" width="7" height="5" rx="1" />
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#bulksender" class="nav-link" data-tab="bulksender">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                        <path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Bulk Sender
+                </a>
+                <a href="#history" class="nav-link" data-tab="history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                        <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Campaign History
+                </a>
+                <a href="#numberchecker" class="nav-link" data-tab="numberchecker">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Number Checker
+                </a>
+            </nav>
+
+            <div class="connection-status-sidebar">
+                <div class="status-indicator-wrapper">
+                    <span class="status-dot disconnected" id="sidebar-status-dot"></span>
+                    <span id="sidebar-status-text">Disconnected</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <h2 id="current-tab-title">Dashboard</h2>
+                </div>
+                <div class="user-profile-badge" id="profile-badge" style="display: none;">
+                    <div class="avatar">
+                        <span id="profile-initial">W</span>
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name" id="profile-name">WhatsApp Account</span>
+                        <span class="profile-number" id="profile-number">+000 000 000</span>
+                    </div>
+                    <button class="logout-btn" id="logout-button" title="Disconnect WhatsApp">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="logout-icon">
+                            <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9M16 17L21 12M21 12L16 7M21 12H9" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- DASHBOARD TAB -->
+                <section id="tab-dashboard" class="tab-panel active">
+                    <div class="grid-layout">
+                        <!-- WhatsApp Linker Card -->
+                        <div class="card glass-card span-2 connect-card">
+                            <div class="card-header">
+                                <h3>WhatsApp Authentication</h3>
+                                <p class="card-subtitle">Scan the QR code with your phone to connect WhatsApp Web</p>
+                            </div>
+                            <div class="connect-body">
+                                <!-- Disconnected state (QR scanner) -->
+                                <div id="qr-container" class="qr-box">
+                                    <div class="qr-placeholder">
+                                        <div class="spinner"></div>
+                                        <p id="qr-status-msg">Starting WhatsApp Client...</p>
+                                    </div>
+                                    <img id="qr-code-img" class="qr-code-image" src="" alt="WhatsApp Web QR Code" style="display: none;">
+                                </div>
+
+                                <!-- Connected state -->
+                                <div id="connected-state-container" class="connected-state-box" style="display: none;">
+                                    <div class="success-glowing-ring">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="check-icon">
+                                            <path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <h4>WhatsApp Connected!</h4>
+                                    <p>Your WhatsApp automation system is logged in and ready to send messages.</p>
+                                    <div class="connected-details">
+                                        <div class="detail-row">
+                                            <span>Profile Name:</span>
+                                            <strong id="card-profile-name">-</strong>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span>WhatsApp Number:</span>
+                                            <strong id="card-profile-number">-</strong>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-danger" id="card-logout-btn">Disconnect Account</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats Card -->
+                        <div class="card glass-card stats-overview-card">
+                            <div class="card-header">
+                                <h3>System Quick Stats</h3>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Outbox Status</span>
+                                    <span class="stat-value text-green" id="stat-outbox-status">Idle</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Messages Sent</span>
+                                    <span class="stat-value" id="stat-total-sent">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Pending / Queue</span>
+                                    <span class="stat-value" id="stat-pending-queue">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Test Message Card -->
+                        <div class="card glass-card test-send-card span-3">
+                            <div class="card-header">
+                                <h3>Send Quick Test Message</h3>
+                                <p class="card-subtitle">Verify your connection by sending a quick text message to a specific number</p>
+                            </div>
+                            <form id="test-send-form" class="horizontal-form">
+                                <div class="form-group flex-1">
+                                    <label for="test-number">WhatsApp Number (with country code)</label>
+                                    <input type="text" id="test-number" placeholder="e.g. 88017XXXXXXXX" required>
+                                </div>
+                                <div class="form-group flex-2">
+                                    <label for="test-message">Message text</label>
+                                    <input type="text" id="test-message" placeholder="Type test message here..." required>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-icon-only" id="test-send-btn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                                        <path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <span>Send Test</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- BULK SENDER TAB -->
+                <section id="tab-bulksender" class="tab-panel">
+                    <div class="campaign-builder-grid">
+                        <!-- Setup Card -->
+                        <div class="card glass-card campaign-inputs-card">
+                            <div class="card-header">
+                                <h3>1. Target Contacts List</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="upload-options-tabs">
+                                    <button class="upload-tab-btn active" data-type="csv">CSV File Upload</button>
+                                    <button class="upload-tab-btn" data-type="manual">Manual Paste</button>
+                                </div>
+
+                                <!-- CSV Option -->
+                                <div id="csv-upload-section" class="upload-container">
+                                    <div class="file-drag-area" id="drop-zone">
+                                        <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="upload-cloud-icon">
+                                            <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 8L12 3M12 3L7 8M12 3V15" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <p>Drag and drop your <strong>contacts.csv</strong> here, or <span class="browse-link">browse files</span></p>
+                                        <small>CSV columns must include: <strong>number</strong> (required), <strong>name</strong>, <strong>company</strong></small>
+                                    </div>
+                                    <div class="csv-status" id="csv-status-box" style="display: none;">
+                                        <div class="csv-status-details">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="csv-file-icon">
+                                                <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21 20 20.5304 20 20V8L14 2Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M14 2V8H20M16 13H8M16 17H8M10 9H8" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            <div class="csv-file-meta">
+                                                <span class="file-name" id="csv-file-name">contacts.csv</span>
+                                                <span class="contacts-loaded" id="csv-contacts-count">0 contacts loaded</span>
+                                            </div>
+                                        </div>
+                                        <button class="remove-csv-btn" id="clear-csv-btn" title="Remove file">&times;</button>
+                                    </div>
+                                </div>
+
+                                <!-- Manual Option -->
+                                <div id="manual-numbers-section" class="upload-container" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="manual-contacts-input">Paste Contacts (one per line format: Number,Name,Company)</label>
+                                        <textarea id="manual-contacts-input" rows="5" placeholder="8801700000000,Arnob,Google&#10;8801811111111,Karim,SoftCorp"></textarea>
+                                        <small class="form-help">Format: phone number (required) followed by comma name, and comma company.</small>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" id="parse-manual-btn">Load Contacts List</button>
+                                </div>
+
+                                <div class="delay-settings-row">
+                                    <div class="form-group">
+                                        <label for="min-delay">Min Delay (s)</label>
+                                        <input type="number" id="min-delay" value="5" min="2" max="60">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="max-delay">Max Delay (s)</label>
+                                        <input type="number" id="max-delay" value="15" min="3" max="120">
+                                    </div>
+                                    <div class="delay-shield-badge">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shield-icon">
+                                            <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 12 12 22 12 22Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <span>Anti-Ban Interval Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Template Creator Card -->
+                        <div class="card glass-card campaign-template-card">
+                            <div class="card-header">
+                                <h3>2. Compose Message Template</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="tag-insert-wrapper">
+                                    <span class="tag-label">Insert Variables:</span>
+                                    <button class="btn-tag" data-tag="{name}">{Name}</button>
+                                    <button class="btn-tag" data-tag="{company}">{Company}</button>
+                                </div>
+                                <div class="form-group">
+                                    <textarea id="message-template" rows="7" placeholder="Hello {Name},&#10;Hope your company {Company} is doing well..."></textarea>
+                                </div>
+                                <div class="template-preview-box">
+                                    <span class="preview-label">Live Sample Preview:</span>
+                                    <div class="preview-content" id="message-preview">
+                                        Hello Valued Customer, <br>Hope your company is doing well...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campaign Runner Panel (Full Width) -->
+                        <div class="card glass-card campaign-control-card span-3">
+                            <div class="campaign-name-bar">
+                                <div class="form-group flex-1">
+                                    <input type="text" id="campaign-name" placeholder="Enter Campaign Name (e.g. Cold Outreach Q3)">
+                                </div>
+                                <div class="campaign-actions">
+                                    <button class="btn btn-primary" id="start-campaign-btn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                                            <polygon points="5 3 19 12 5 21 5 3" />
+                                        </svg>
+                                        Start Campaign
+                                    </button>
+                                    <button class="btn btn-warning" id="pause-campaign-btn" disabled>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                                            <rect x="6" y="4" width="4" height="16" />
+                                            <rect x="14" y="4" width="4" height="16" />
+                                        </svg>
+                                        Pause
+                                    </button>
+                                    <button class="btn btn-danger" id="stop-campaign-btn" disabled>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                                            <rect x="4" y="4" width="16" height="16" />
+                                        </svg>
+                                        Stop
+                                    </button>
+                                    <button class="btn btn-secondary" id="reset-campaign-btn">
+                                        Clear Form
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Real-time Progress Section -->
+                            <div class="campaign-progress-section" id="active-campaign-progress" style="display: none;">
+                                <div class="progress-info-row">
+                                    <div class="campaign-state-indicator">
+                                        <span class="status-indicator-pill pulse" id="campaign-status-badge">Running</span>
+                                        <h4 id="display-campaign-name">Cold Outreach Q3</h4>
+                                    </div>
+                                    <div class="progress-numerical">
+                                        <span>Processed: <strong id="progress-processed">0 / 0</strong></span>
+                                        <span>Sent: <strong class="text-green" id="progress-sent">0</strong></span>
+                                        <span>Failed: <strong class="text-red" id="progress-failed">0</strong></span>
+                                    </div>
+                                </div>
+
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" id="campaign-progress-bar" style="width: 0%;"></div>
+                                </div>
+
+                                <div class="console-logs-wrapper">
+                                    <div class="console-header">
+                                        <span>Real-time Sending Logs</span>
+                                        <button class="clear-console-btn" id="clear-console-btn">Clear Logs</button>
+                                    </div>
+                                    <div class="console-terminal" id="console-logs">
+                                        <div class="log-row info">System initialized. Awaiting campaign settings...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- HISTORY TAB -->
+                <section id="tab-history" class="tab-panel">
+                    <div class="card glass-card history-container-card">
+                        <div class="card-header history-header">
+                            <div>
+                                <h3>Outreach Campaign History</h3>
+                                <p class="card-subtitle">View performance logs and delivery statistics for past automation runs</p>
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm" id="clear-history-btn">
+                                Clear All History
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Campaign Name</th>
+                                        <th>Status</th>
+                                        <th>Date Started</th>
+                                        <th>Duration</th>
+                                        <th>Target</th>
+                                        <th>Success Rate</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body">
+                                    <!-- Dynamic rows loaded here -->
+                                    <tr class="table-empty-row">
+                                        <td colspan="7">No campaigns run yet. Create a campaign inside the Bulk Sender tab.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NUMBER CHECKER TAB -->
+                <section id="tab-numberchecker" class="tab-panel">
+                    <div class="campaign-builder-grid">
+                        <!-- Checker Input Card -->
+                        <div class="card glass-card">
+                            <div class="card-header">
+                                <h3>1. Load Target Numbers</h3>
+                                <p class="card-subtitle">Upload a list file (Excel, CSV, TXT) or paste plain numbers to check</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group" style="margin-bottom: 16px;">
+                                    <label for="checker-country-code">Default Country Prefix</label>
+                                    <select id="checker-country-code" style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); padding: 10px; color: var(--text-primary); font-family: var(--font-body); font-size: 0.9rem; width: 100%; transition: var(--transition-smooth); margin-top: 4px;">
+                                        <option value="none">None (Assume country code is already in file)</option>
+                                        <option value="880" selected>Bangladesh (+880)</option>
+                                        <option value="91">India (+91)</option>
+                                        <option value="1">USA/Canada (+1)</option>
+                                        <option value="44">United Kingdom (+44)</option>
+                                        <option value="92">Pakistan (+92)</option>
+                                        <option value="971">UAE (+971)</option>
+                                        <option value="966">Saudi Arabia (+966)</option>
+                                    </select>
+                                    <small class="form-help" style="margin-top: 4px; display: block;">If a number in the file lacks a country prefix, the system will automatically prepend this code.</small>
+                                </div>
+
+                                <div class="upload-options-tabs">
+                                    <button class="checker-upload-tab-btn active" data-type="csv">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
+                                        </svg>
+                                        File Upload
+                                    </button>
+                                    <button class="checker-upload-tab-btn" data-type="manual">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
+                                        </svg>
+                                        Manual Paste
+                                    </button>
+                                </div>
+ 
+                                <!-- CSV Option -->
+                                <div id="checker-csv-section" class="upload-container">
+                                    <div class="file-drag-area" id="checker-drop-zone">
+                                        <input type="file" id="checker-csv-input" accept=".xlsx,.xls,.csv,.txt" style="display: none;">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="upload-cloud-icon">
+                                            <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 8L12 3M12 3L7 8M12 3V15" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <p>Drag and drop your <strong>list file</strong> here, or <span class="browse-link">browse files</span></p>
+                                        <small>Supports: <strong>.xlsx</strong>, <strong>.xls</strong>, <strong>.csv</strong>, or <strong>.txt</strong> lists</small>
+                                    </div>
+                                    <div class="csv-status" id="checker-csv-status" style="display: none; flex-direction: column; gap: 12px; align-items: flex-start; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); padding: 16px; border-radius: 8px; width: 100%;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                            <div class="csv-status-details" style="display: flex; gap: 12px; align-items: center;">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="csv-file-icon" style="width: 24px; height: 24px; color: var(--accent-emerald);">
+                                                    <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21 20 20.5304 20 20V8L14 2Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    <path d="M14 2V8H20M16 13H8M16 17H8M10 9H8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                <div class="csv-file-meta">
+                                                    <span class="file-name" id="checker-csv-file-name" style="font-weight: 600; color: var(--text-primary);">contacts.csv</span>
+                                                    <span class="contacts-loaded" id="checker-csv-count" style="display: block; font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">File selected. Ready to parse.</span>
+                                                </div>
+                                            </div>
+                                            <button class="remove-csv-btn" id="checker-clear-csv" title="Remove file" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; transition: var(--transition-smooth); line-height: 1;">&times;</button>
+                                        </div>
+                                        <button class="btn btn-secondary btn-sm" id="checker-parse-file-btn" style="width: 100%;">Load File Numbers</button>
+                                    </div>
+                                </div>
+
+                                <!-- Manual Option -->
+                                <div id="checker-manual-section" class="upload-container" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="checker-manual-input">Paste Numbers (one per line)</label>
+                                        <textarea id="checker-manual-input" rows="6" placeholder="8801700000000&#10;8801811111111"></textarea>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" id="checker-parse-manual">Load Numbers</button>
+                                </div>
+
+                                <div class="checker-controls" style="margin-top: 24px; display: flex; gap: 10px;">
+                                    <button class="btn btn-primary flex-1" id="checker-start-btn">Start Filter</button>
+                                    <button class="btn btn-warning" id="checker-stop-btn" disabled>Stop</button>
+                                    <button class="btn btn-secondary" id="checker-reset-btn">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Checker Progress & Console -->
+                        <div class="card glass-card">
+                            <div class="card-header">
+                                <h3>2. Live Filtering Status</h3>
+                                <p class="card-subtitle">Real-time status updates</p>
+                            </div>
+                            <div class="card-body" style="display: flex; flex-direction: column; gap: 16px;">
+                                <div class="progress-info-row">
+                                    <div>
+                                        Status: <span class="status-indicator-pill pulse" id="checker-status-badge">Idle</span>
+                                    </div>
+                                    <div class="progress-numerical">
+                                        Checked: <strong id="checker-progress-text">0 / 0</strong>
+                                    </div>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" id="checker-progress-bar" style="width: 0%;"></div>
+                                </div>
+                                <div class="timer-info-row" style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-top: -4px;">
+                                    <div>Elapsed Time: <strong id="checker-elapsed-time">00:00</strong></div>
+                                    <div>Estimated Remaining: <strong id="checker-remaining-time">00:00</strong></div>
+                                </div>
+                                <div class="console-logs-wrapper" style="margin-top: 10px;">
+                                    <div class="console-header">
+                                        <span>Validation Logs</span>
+                                    </div>
+                                    <div class="console-terminal" id="checker-logs" style="height: 140px;">
+                                        <div class="log-row info">Ready. Please load numbers and click "Start Filter".</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Columns (Full Width) -->
+                        <div class="card glass-card span-3">
+                             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 16px;">
+                                 <div>
+                                     <h3>3. Filter Results</h3>
+                                     <p class="card-subtitle">Valid numbers are sorted to the green panel for easy copy/export</p>
+                                 </div>
+                                 <div style="display: flex; gap: 10px;">
+                                     <button class="btn btn-secondary btn-sm" id="checker-download-report-btn" disabled>
+                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/>
+                                         </svg>
+                                         Download Report (.csv)
+                                     </button>
+                                     <button class="btn btn-primary btn-sm" id="checker-copy-valid-btn" disabled>
+                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                         </svg>
+                                         Copy Valid Numbers
+                                     </button>
+                                 </div>
+                             </div>
+                             <div class="checker-results-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px;">
+                                 <div class="result-column-box valid-box">
+                                     <h4 class="text-green" style="margin-bottom: 10px; font-family: var(--font-heading); display: flex; justify-content: space-between;">
+                                         <span>Active WhatsApp Numbers</span>
+                                         <span id="checker-valid-count">0</span>
+                                     </h4>
+                                     <div class="result-list-scroll" id="checker-valid-list">
+                                         <div class="empty-list-msg">No active numbers found yet.</div>
+                                     </div>
+                                 </div>
+                                 <div class="result-column-box invalid-box">
+                                     <h4 class="text-red" style="margin-bottom: 10px; font-family: var(--font-heading); display: flex; justify-content: space-between;">
+                                         <span>Non-WhatsApp Numbers</span>
+                                         <span id="checker-invalid-count">0</span>
+                                     </h4>
+                                     <div class="result-list-scroll" id="checker-invalid-list">
+                                         <div class="empty-list-msg">No inactive numbers found yet.</div>
+                                     </div>
+                                 </div>
+                                 <div class="result-column-box format-box" style="border-top: 3px solid var(--accent-amber);">
+                                     <h4 class="text-amber" style="margin-bottom: 10px; font-family: var(--font-heading); display: flex; justify-content: space-between; color: var(--accent-amber) !important;">
+                                         <span>Format Errors</span>
+                                         <span id="checker-format-count">0</span>
+                                     </h4>
+                                     <div class="result-list-scroll" id="checker-format-list">
+                                         <div class="empty-list-msg">No format errors found yet.</div>
+                                     </div>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast System -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Socket.io library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- App Client Script -->
+    <script src="app.js"></script>
+</body>
+</html>
