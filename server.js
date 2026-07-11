@@ -426,10 +426,11 @@ app.post('/api/parse-csv', upload.single('csvFile'), (req, res) => {
     fs.createReadStream(filePath)
         .pipe(csvParser())
         .on('data', (row) => {
-            // Standardize columns (ignore case/spacing)
+            // Standardize columns (ignore case/spacing, strip UTF-8 BOM if present)
             const cleanedRow = {};
             for (const key in row) {
-                cleanedRow[key.toLowerCase().trim()] = row[key];
+                const cleanKey = key.replace(/^\uFEFF/, '').toLowerCase().trim();
+                cleanedRow[cleanKey] = row[key];
             }
 
             // Find number and name keys
@@ -862,7 +863,8 @@ app.post('/api/parse-any-file', upload.single('file'), (req, res) => {
                 .on('data', (row) => {
                     const cleanedRow = {};
                     for (const key in row) {
-                        cleanedRow[key.toLowerCase().trim()] = row[key];
+                        const cleanKey = key.replace(/^\uFEFF/, '').toLowerCase().trim();
+                        cleanedRow[cleanKey] = row[key];
                     }
                     const number = cleanedRow.number || cleanedRow.phone || cleanedRow.contact || cleanedRow.whatsapp;
                     const name = cleanedRow.name || cleanedRow.customer || cleanedRow.user || 'Contact';
