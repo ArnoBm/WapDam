@@ -344,7 +344,9 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="tag-insert-wrapper">
+                                <div id="composer-layout-container" style="display: grid; grid-template-columns: 1fr; gap: 20px; transition: all 0.3s ease;">
+                                    <div class="composer-editor-column">
+                                        <div class="tag-insert-wrapper">
                                     <span class="tag-label">Insert Variables:</span>
                                     <button class="btn-tag" data-tag="{name}">{Name}</button>
                                     <button class="btn-tag" data-tag="{company}">{Company}</button>
@@ -401,6 +403,48 @@
                                             <span id="campaign-media-filesize" style="font-size: 0.7rem; color: var(--text-secondary);">1.2 MB</span>
                                         </div>
                                         <button id="clear-media-btn" style="background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; font-weight: bold; padding: 4px; line-height: 1;">&times;</button>
+                                    </div>
+                                    </div>
+
+                                    <!-- Right Side: Rules & Instructions for Anti-Ban Service -->
+                                    <div id="composer-rules-sidebar" style="display: none; border-left: 1px solid var(--glass-border); padding-left: 20px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; max-height: 480px; overflow-y: auto;">
+                                        <h4 style="margin: 0 0 12px 0; color: var(--accent-amber); display: flex; align-items: center; gap: 6px; font-family: var(--font-heading); font-size: 0.9rem;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; vertical-align: middle;"><path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 12 12 22 12 22Z"/></svg>
+                                            Anti-Ban Service Rules & Tips
+                                        </h4>
+                                        <div style="display: flex; flex-direction: column; gap: 14px;">
+                                            <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 10px; border-radius: var(--border-radius-sm);">
+                                                <span style="font-weight: 600; color: var(--text-primary); display: block; margin-bottom: 4px;">1. Spintax Randomization</span>
+                                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.78rem;">Combine words in curly braces separated by pipes to generate random messages for each recipient.</p>
+                                                <div style="margin-top: 6px; color: var(--text-muted); font-size: 0.72rem; font-style: italic;">
+                                                    <strong>Format:</strong> <code>{hi|hello|hey}</code><br>
+                                                    <strong>Example:</strong> <code>{Hello|Hi|Hey} {name}, {hope you are well|good morning}.</code>
+                                                </div>
+                                            </div>
+
+                                            <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 10px; border-radius: var(--border-radius-sm);">
+                                                <span style="font-weight: 600; color: var(--text-primary); display: block; margin-bottom: 4px;">2. Multi-Variant Rotation</span>
+                                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.78rem;">Write at least 3 distinct templates. The system cycles through variants sequentially to prevent copy-paste patterns.</p>
+                                                <div style="margin-top: 6px; color: var(--text-muted); font-size: 0.72rem; font-style: italic;">
+                                                    <strong>Variant 1:</strong> Friendly Greeting<br>
+                                                    <strong>Variant 2:</strong> Short Offer pitch<br>
+                                                    <strong>Variant 3:</strong> Direct Question check
+                                                </div>
+                                            </div>
+
+                                            <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 10px; border-radius: var(--border-radius-sm);">
+                                                <span style="font-weight: 600; color: var(--text-primary); display: block; margin-bottom: 4px;">3. Account Warm-up Rule</span>
+                                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.78rem;">Ensure the sending SIM has been active for 7-10 days chatting with family. WhatsApp flags inactive numbers immediately upon cold bulk outreach.</p>
+                                            </div>
+
+                                            <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 10px; border-radius: var(--border-radius-sm);">
+                                                <span style="font-weight: 600; color: var(--text-primary); display: block; margin-bottom: 4px;">4. Get Recipient Responses</span>
+                                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.78rem;">Add a call to action asking them to reply. When recipients reply, WhatsApp registers it as a normal contact conversation.</p>
+                                                <div style="margin-top: 6px; color: var(--text-muted); font-size: 0.72rem; font-style: italic;">
+                                                    <strong>Example:</strong> "Reply YES to download..."
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -126,6 +126,10 @@ const elements = {
     safeSleepBatchSize: document.getElementById('safe-sleep-batch-size'),
     safeSleepDelayGroup: document.getElementById('safe-sleep-delay-group'),
     safeSleepDelayMin: document.getElementById('safe-sleep-delay-min'),
+
+    // Composer Layout elements
+    composerLayoutContainer: document.getElementById('composer-layout-container'),
+    composerRulesSidebar: document.getElementById('composer-rules-sidebar'),
     
     // Toast
     toastContainer: document.getElementById('toast-container'),
@@ -1019,6 +1023,12 @@ function initTemplateComposer() {
             singleTemplateGroup.style.display = 'none';
             multiVariantGroup.style.display = 'block';
             
+            // Turn on split layout & rules sidebar
+            if (elements.composerRulesSidebar && elements.composerLayoutContainer) {
+                elements.composerRulesSidebar.style.display = 'block';
+                elements.composerLayoutContainer.style.gridTemplateColumns = '1.3fr 1fr';
+            }
+            
             const container = document.getElementById('variants-container');
             if (container.children.length === 0) {
                 // Pre-populate with 3 variants
@@ -1037,6 +1047,12 @@ function initTemplateComposer() {
             singleTemplateGroup.style.display = 'block';
             multiVariantGroup.style.display = 'none';
             activeTextarea = elements.messageTemplate;
+            
+            // Turn off split layout & hide rules sidebar
+            if (elements.composerRulesSidebar && elements.composerLayoutContainer) {
+                elements.composerRulesSidebar.style.display = 'none';
+                elements.composerLayoutContainer.style.gridTemplateColumns = '1fr';
+            }
         }
         updateMessagePreview();
     });
