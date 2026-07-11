@@ -6,6 +6,7 @@ let loadedContacts = [];
 let whatsappConnected = false;
 let currentActiveTab = 'dashboard';
 let renderedCampaignLogCount = 0;
+let renderedCampaignId = null;
 
 // DOM Elements
 const elements = {
@@ -78,6 +79,11 @@ const elements = {
     consoleLogs: document.getElementById('console-logs'),
     clearConsoleBtn: document.getElementById('clear-console-btn'),
     
+    // Contacts Queue
+    queueCard: document.getElementById('campaign-contacts-queue-card'),
+    queueCountBadge: document.getElementById('queue-count-badge'),
+    queueTableBody: document.getElementById('queue-table-body'),
+
     // History Tab
     historyTableBody: document.getElementById('history-table-body'),
     clearHistoryBtn: document.getElementById('clear-history-btn'),
@@ -430,6 +436,42 @@ function initManualContactsParser() {
 
 function updateStatsUI() {
     elements.statPendingQueue.textContent = loadedContacts.length;
+    renderContactsQueue();
+}
+
+function renderContactsQueue() {
+    if (!elements.queueTableBody || !elements.queueCard || !elements.queueCountBadge) return;
+
+    if (loadedContacts.length === 0) {
+        elements.queueTableBody.innerHTML = '';
+        elements.queueCard.style.display = 'none';
+        elements.queueCountBadge.textContent = '0 Loaded';
+        return;
+    }
+
+    elements.queueCountBadge.textContent = `${loadedContacts.length} Loaded`;
+    elements.queueCard.style.display = 'block';
+
+    let html = '';
+    loadedContacts.forEach((contact, index) => {
+        const num = contact.number;
+        const name = contact.name || 'Valued Customer';
+        const company = contact.company || '';
+        const status = contact.status || 'pending';
+        
+        html += `
+            <tr id="q-row-${index}" class="${status === 'typing' || status === 'sending' ? 'active-row' : ''}">
+                <td style="padding: 10px; color: var(--text-secondary); font-weight: 500;">${index + 1}</td>
+                <td style="padding: 10px; font-weight: 500; font-family: monospace;">${num}</td>
+                <td style="padding: 10px;">${name}</td>
+                <td style="padding: 10px; color: var(--text-secondary);">${company}</td>
+                <td style="padding: 10px; text-align: center;">
+                    <span class="q-status ${status}">${status}</span>
+                </td>
+            </tr>
+        `;
+    });
+    elements.queueTableBody.innerHTML = html;
 }
 
 // ----------------------------------------------------
@@ -776,8 +818,43 @@ socket.on('campaign-update', (campaign) => {
     updateCampaignProgressUI(campaign);
 });
 
+socket.on('contact-status-update', (data) => {
+    const { index, status } = data;
+    
+    // Update local loadedContacts state
+    if (loadedContacts[index]) {
+        loadedContacts[index].status = status;
+    }
+    
+    const row = document.getElementById(`q-row-${index}`);
+    if (row) {
+        row.classList.remove('active-row');
+        if (status === 'typing' || status === 'sending') {
+            row.classList.add('active-row');
+        }
+        
+        const badge = row.querySelector('.q-status');
+        if (badge) {
+            badge.className = `q-status ${status}`;
+            badge.textContent = status;
+        }
+        
+        // Auto scroll active contact row into view inside queue scroll container
+        if (status === 'typing' || status === 'sending') {
+            row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+});
+
 function updateCampaignProgressUI(campaign) {
-    const { status, total, sent, failed, logs, name } = campaign;
+    const { status, total, sent, failed, logs, name, id, contacts } = campaign;
+    
+    // Sync queue once on campaign change/load
+    if (contacts && contacts.length > 0 && id !== renderedCampaignId) {
+        renderedCampaignId = id;
+        loadedContacts = contacts;
+        renderContactsQueue();
+    }
     
     // Set outbox stats inside dashboard
     elements.statOutboxStatus.textContent = status.charAt(0).toUpperCase() + status.slice(1);
@@ -791,6 +868,7 @@ function updateCampaignProgressUI(campaign) {
         elements.stopCampaignBtn.disabled = true;
         elements.resetCampaignBtn.disabled = false;
         renderedCampaignLogCount = 0;
+        renderedCampaignId = null;
         return;
     }
 

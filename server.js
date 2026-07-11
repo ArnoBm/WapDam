@@ -285,12 +285,41 @@ async function runCampaignNext() {
         }
 
         const serializedNumber = formattedNumber + '@c.us';
-        
+
+        // 1. Emit 'typing' status to UI and trigger typing state in WhatsApp
+        if (activeCampaign.contacts[currentIndex]) {
+            activeCampaign.contacts[currentIndex].status = 'typing';
+        }
+        io.emit('contact-status-update', { index: currentIndex, status: 'typing' });
+        try {
+            const chat = await client.getChatById(serializedNumber);
+            await chat.sendStateTyping();
+            // Let it show typing for 1.5 seconds
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            await chat.clearState();
+        } catch (e) {
+            // Fallback delay if chat retrieval or state typing fails
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        // 2. Emit 'sending' status to UI
+        if (activeCampaign.contacts[currentIndex]) {
+            activeCampaign.contacts[currentIndex].status = 'sending';
+        }
+        io.emit('contact-status-update', { index: currentIndex, status: 'sending' });
+
         // Double check number registration to avoid sending to invalid numbers
         const numberId = await client.getNumberId(serializedNumber);
         if (numberId) {
             await client.sendMessage(numberId._serialized, text);
             activeCampaign.sent++;
+            
+            // 3. Emit 'sent' status
+            if (activeCampaign.contacts[currentIndex]) {
+                activeCampaign.contacts[currentIndex].status = 'sent';
+            }
+            io.emit('contact-status-update', { index: currentIndex, status: 'sent' });
+
             activeCampaign.logs.push({
                 time: new Date().toLocaleTimeString(),
                 text: `Sent to ${name} (${formattedNumber})`,
@@ -298,6 +327,13 @@ async function runCampaignNext() {
             });
         } else {
             activeCampaign.failed++;
+            
+            // 3. Emit 'failed' status
+            if (activeCampaign.contacts[currentIndex]) {
+                activeCampaign.contacts[currentIndex].status = 'failed';
+            }
+            io.emit('contact-status-update', { index: currentIndex, status: 'failed' });
+
             activeCampaign.logs.push({
                 time: new Date().toLocaleTimeString(),
                 text: `Failed: ${formattedNumber} is not on WhatsApp`,
@@ -305,6 +341,10 @@ async function runCampaignNext() {
             });
         }
     } catch (err) {
+        if (activeCampaign.contacts[currentIndex]) {
+            activeCampaign.contacts[currentIndex].status = 'failed';
+        }
+        io.emit('contact-status-update', { index: currentIndex, status: 'failed' });
         const isBrowserCrash = err.message.includes('detached Frame') || 
                                err.message.includes('Session closed') || 
                                err.message.includes('target closed') || 
