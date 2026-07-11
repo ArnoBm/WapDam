@@ -191,6 +191,26 @@
 
                 <!-- BULK SENDER TAB -->
                 <section id="tab-bulksender" class="tab-panel">
+                    <!-- Anti-Ban Quick Guide Alert -->
+                    <div class="card glass-card" style="margin-bottom: 20px; border-left: 4px solid var(--accent-amber); background: rgba(245, 158, 11, 0.03); max-width: 1200px; margin-left: auto; margin-right: auto;">
+                        <div class="card-header" style="padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" id="tips-header-toggle">
+                            <h4 style="margin: 0; color: var(--accent-amber); display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-size: 0.95rem;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                WhatsApp Anti-Ban Best Practices & Strategy Guide
+                            </h4>
+                            <span id="tips-toggle-icon" style="color: var(--text-muted); font-size: 0.8rem; font-weight: bold;">[Show Tips]</span>
+                        </div>
+                        <div class="card-body" id="tips-body-content" style="display: none; padding: 0 16px 16px 16px; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+                            <ul style="margin: 8px 0 0 18px; padding: 0; list-style-type: disc;">
+                                <li style="margin-bottom: 6px;"><strong>Warm-up New Numbers</strong>: Never send campaigns from a new SIM card. Start by chatting with friends/family for 7-10 days first.</li>
+                                <li style="margin-bottom: 6px;"><strong>Use Inline Spintax</strong>: Create variation patterns in your message (e.g., <code>{Hello|Hi|Hey} {Name}, {hope you are well|good morning}.</code>). The server picks random words for each recipient.</li>
+                                <li style="margin-bottom: 6px;"><strong>Get Recipient Replies</strong>: Organic conversations prevent bans. Ask questions like <em>"Reply 'YES' to receive the PDF brochure"</em>. If recipients reply, WhatsApp flags your chats as genuine.</li>
+                                <li style="margin-bottom: 6px;"><strong>Higher Delays & Safe Sleep</strong>: Use delays above 40s for bulk campaigns. Enable <strong>Safe Sleep Mode</strong> below to pause sending and take a rest break after a batch of messages.</li>
+                                <li style="margin-bottom: 6px;"><strong>Avoid External Links Initially</strong>: Sending websites or links to unsaved numbers increases report rates. Send links only after the recipient replies.</li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <div class="campaign-builder-grid">
                         <!-- Setup Card -->
                         <div class="card glass-card campaign-inputs-card">
@@ -251,7 +271,6 @@
                                     </div>
                                     <button class="btn btn-secondary btn-sm" id="parse-manual-btn">Load Contacts List</button>
                                 </div>
->
 
                                 <div class="delay-settings-row">
                                     <div class="form-group">
@@ -267,6 +286,22 @@
                                             <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 12 12 22 12 22Z" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
                                         <span>Anti-Ban Interval Active</span>
+                                    </div>
+                                </div>
+
+                                <!-- Safe Sleep Settings -->
+                                <div class="safe-sleep-settings-row" style="margin-top: 15px; display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; align-items: end; border-top: 1px dashed var(--glass-border); padding-top: 15px;">
+                                    <div class="form-group" style="display: flex; align-items: center; gap: 8px; height: 38px; margin: 0;">
+                                        <input type="checkbox" id="safe-sleep-enable" style="width: 16px; height: 16px; accent-color: var(--accent-emerald); cursor: pointer;">
+                                        <label for="safe-sleep-enable" style="font-size: 0.8rem; font-weight: 500; cursor: pointer; color: var(--text-secondary);">Enable Safe Sleep</label>
+                                    </div>
+                                    <div class="form-group" id="safe-sleep-batch-group" style="opacity: 0.5; pointer-events: none; transition: var(--transition-smooth); margin: 0;">
+                                        <label for="safe-sleep-batch-size" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Batch Size (Msgs)</label>
+                                        <input type="number" id="safe-sleep-batch-size" value="15" min="5" max="100" style="width: 100%; padding: 6px; font-size: 0.8rem; background: rgba(0,0,0,0.15); border: 1px solid var(--glass-border); border-radius: var(--border-radius-sm); color: var(--text-primary); outline: none;">
+                                    </div>
+                                    <div class="form-group" id="safe-sleep-delay-group" style="opacity: 0.5; pointer-events: none; transition: var(--transition-smooth); margin: 0;">
+                                        <label for="safe-sleep-delay-min" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Sleep Time (Mins)</label>
+                                        <input type="number" id="safe-sleep-delay-min" value="3" min="1" max="60" style="width: 100%; padding: 6px; font-size: 0.8rem; background: rgba(0,0,0,0.15); border: 1px solid var(--glass-border); border-radius: var(--border-radius-sm); color: var(--text-primary); outline: none;">
                                     </div>
                                 </div>
 

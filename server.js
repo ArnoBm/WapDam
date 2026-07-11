@@ -55,6 +55,7 @@ let activeCampaign = {
     messageTemplate: '',
     delays: { min: 5, max: 15 },
     media: null,
+    safeSleep: { enabled: false, batchSize: 10, delayMin: 3 },
     logs: [],
     startedAt: null,
     completedAt: null
@@ -235,6 +236,19 @@ io.on('connection', (socket) => {
     });
 });
 
+function parseSpintax(text) {
+    if (!text) return '';
+    const spintaxPattern = /\{([^{}|]+[|][^{}]+)\}/g;
+    let matches;
+    while ((matches = spintaxPattern.exec(text)) !== null) {
+        const options = matches[1].split('|');
+        const randomOption = options[Math.floor(Math.random() * options.length)];
+        text = text.replace(matches[0], randomOption);
+        spintaxPattern.lastIndex = 0;
+    }
+    return text;
+}
+
 // Campaign engine
 async function runCampaignNext() {
     if (activeCampaign.status !== 'running') return;
@@ -276,7 +290,10 @@ async function runCampaignNext() {
         selectedTemplate = activeCampaign.messageTemplate || '';
     }
 
-    let text = selectedTemplate
+    // Apply spintax spinning
+    const spunTemplate = parseSpintax(selectedTemplate);
+
+    let text = spunTemplate
         .replace(/{name}/gi, name)
         .replace(/{company}/gi, company);
 
@@ -382,19 +399,31 @@ async function runCampaignNext() {
 
     const nextIndex = activeCampaign.sent + activeCampaign.failed;
     if (nextIndex < activeCampaign.total && activeCampaign.status === 'running') {
-        // Schedule next message with a random delay
-        const minDelay = parseInt(activeCampaign.delays.min) || 5;
-        const maxDelay = parseInt(activeCampaign.delays.max) || 15;
-        const delaySeconds = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
-        
-        activeCampaign.logs.push({
-            time: new Date().toLocaleTimeString(),
-            text: `Waiting ${delaySeconds}s to avoid ban risk...`,
-            type: 'info'
-        });
-        io.emit('campaign-update', activeCampaign);
+        const safeSleep = activeCampaign.safeSleep;
+        if (safeSleep && safeSleep.enabled && nextIndex > 0 && nextIndex % safeSleep.batchSize === 0) {
+            const sleepMinutes = parseInt(safeSleep.delayMin) || 3;
+            activeCampaign.logs.push({
+                time: new Date().toLocaleTimeString(),
+                text: `[Safe Sleep] Batch of ${safeSleep.batchSize} reached. Sleeping for ${sleepMinutes} minutes to mimic human rest...`,
+                type: 'warning'
+            });
+            io.emit('campaign-update', activeCampaign);
+            campaignTimeout = setTimeout(runCampaignNext, sleepMinutes * 60 * 1000);
+        } else {
+            // Schedule next message with a random delay
+            const minDelay = parseInt(activeCampaign.delays.min) || 5;
+            const maxDelay = parseInt(activeCampaign.delays.max) || 15;
+            const delaySeconds = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
+            
+            activeCampaign.logs.push({
+                time: new Date().toLocaleTimeString(),
+                text: `Waiting ${delaySeconds}s to avoid ban risk...`,
+                type: 'info'
+            });
+            io.emit('campaign-update', activeCampaign);
 
-        campaignTimeout = setTimeout(runCampaignNext, delaySeconds * 1000);
+            campaignTimeout = setTimeout(runCampaignNext, delaySeconds * 1000);
+        }
     } else if (nextIndex >= activeCampaign.total) {
         finishCampaign('completed');
     }
@@ -596,6 +625,7 @@ app.post('/api/campaign/start', (req, res) => {
             messageTemplate: messageTemplate,
             delays: { min: minDelay || 5, max: maxDelay || 15 },
             media: req.body.media || null,
+            safeSleep: req.body.safeSleep || { enabled: false, batchSize: 10, delayMin: 3 },
             logs: [{ time: new Date().toLocaleTimeString(), text: 'Campaign started.', type: 'info' }],
             startedAt: new Date().toISOString(),
             completedAt: null
@@ -665,6 +695,7 @@ app.post('/api/campaign/reset', (req, res) => {
         messageTemplate: '',
         delays: { min: 5, max: 15 },
         media: null,
+        safeSleep: { enabled: false, batchSize: 10, delayMin: 3 },
         logs: [],
         startedAt: null,
         completedAt: null

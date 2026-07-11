@@ -119,6 +119,13 @@ const elements = {
     // History Tab
     historyTableBody: document.getElementById('history-table-body'),
     clearHistoryBtn: document.getElementById('clear-history-btn'),
+
+    // Safe Sleep elements
+    safeSleepEnable: document.getElementById('safe-sleep-enable'),
+    safeSleepBatchGroup: document.getElementById('safe-sleep-batch-group'),
+    safeSleepBatchSize: document.getElementById('safe-sleep-batch-size'),
+    safeSleepDelayGroup: document.getElementById('safe-sleep-delay-group'),
+    safeSleepDelayMin: document.getElementById('safe-sleep-delay-min'),
     
     // Toast
     toastContainer: document.getElementById('toast-container'),
@@ -1258,7 +1265,12 @@ function initCampaignControls() {
                 messageTemplate: template,
                 minDelay: minVal,
                 maxDelay: maxVal,
-                media: mediaPayload
+                media: mediaPayload,
+                safeSleep: {
+                    enabled: elements.safeSleepEnable.checked,
+                    batchSize: parseInt(elements.safeSleepBatchSize.value) || 15,
+                    delayMin: parseInt(elements.safeSleepDelayMin.value) || 3
+                }
             };
 
             const res = await fetch('/api/campaign/start', {
@@ -1337,6 +1349,10 @@ function initCampaignControls() {
                     updateMessagePreview();
                     resetCsvUploadState();
                     resetCampaignMediaState();
+                    if (elements.safeSleepEnable) {
+                        elements.safeSleepEnable.checked = false;
+                        elements.safeSleepEnable.dispatchEvent(new Event('change'));
+                    }
                     showToast('Form reset.', 'info');
                 }
             } catch (e) {
@@ -1349,6 +1365,36 @@ function initCampaignControls() {
     elements.clearConsoleBtn.addEventListener('click', () => {
         elements.consoleLogs.innerHTML = '<div class="log-row info">Console cleared. Logs will continue on next message.</div>';
     });
+
+    // Toggle Safe Sleep input groups opacity dynamically
+    if (elements.safeSleepEnable) {
+        elements.safeSleepEnable.addEventListener('change', (e) => {
+            const enabled = e.target.checked;
+            if (enabled) {
+                elements.safeSleepBatchGroup.style.opacity = '1';
+                elements.safeSleepBatchGroup.style.pointerEvents = 'auto';
+                elements.safeSleepDelayGroup.style.opacity = '1';
+                elements.safeSleepDelayGroup.style.pointerEvents = 'auto';
+            } else {
+                elements.safeSleepBatchGroup.style.opacity = '0.5';
+                elements.safeSleepBatchGroup.style.pointerEvents = 'none';
+                elements.safeSleepDelayGroup.style.opacity = '0.5';
+                elements.safeSleepDelayGroup.style.pointerEvents = 'none';
+            }
+        });
+    }
+
+    // Toggle Collapsible Strategy Tips Guide
+    const tipsHeader = document.getElementById('tips-header-toggle');
+    const tipsBody = document.getElementById('tips-body-content');
+    const tipsIcon = document.getElementById('tips-toggle-icon');
+    if (tipsHeader && tipsBody) {
+        tipsHeader.addEventListener('click', () => {
+            const isHidden = tipsBody.style.display === 'none';
+            tipsBody.style.display = isHidden ? 'block' : 'none';
+            tipsIcon.textContent = isHidden ? '[Hide Tips]' : '[Show Tips]';
+        });
+    }
 }
 
 // Socket updates for Campaign state
