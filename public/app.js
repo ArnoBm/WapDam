@@ -352,11 +352,11 @@ function initCsvUploader() {
 
 async function handleCsvFile(file) {
     const formData = new FormData();
-    formData.append('csvFile', file);
+    formData.append('file', file);
 
     try {
         elements.dropZone.style.opacity = '0.5';
-        const res = await fetch('/api/parse-csv', {
+        const res = await fetch('/api/parse-any-file', {
             method: 'POST',
             body: formData
         });
@@ -373,15 +373,15 @@ async function handleCsvFile(file) {
             elements.csvFileName.textContent = file.name;
             elements.csvContactsCount.textContent = `${data.contactsCount} contacts imported successfully!`;
             
-            showToast(`${data.contactsCount} contacts loaded from CSV file.`, 'success');
+            showToast(`${data.contactsCount} contacts loaded from file.`, 'success');
             updateStatsUI();
         } else {
-            showToast(data.error || 'Failed to parse CSV.', 'error');
+            showToast(data.error || 'Failed to parse file.', 'error');
             resetCsvUploadState();
         }
     } catch (err) {
         elements.dropZone.style.opacity = '1';
-        showToast('Error uploading CSV file: ' + err.message, 'error');
+        showToast('Error uploading file: ' + err.message, 'error');
         resetCsvUploadState();
     }
 }
