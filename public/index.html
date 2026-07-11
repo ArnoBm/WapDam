@@ -189,6 +189,20 @@
                                 <h3>1. Target Contacts List</h3>
                             </div>
                             <div class="card-body">
+                                <!-- Load Saved Group Row -->
+                                <div class="form-group" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);">
+                                    <label for="group-select" style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-secondary);">
+                                        <span>Or Load Saved Group</span>
+                                        <button id="delete-group-btn" class="remove-variant-btn" style="display: none; padding: 2px 6px; font-size: 0.75rem;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 2px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                            Delete Group
+                                        </button>
+                                    </label>
+                                    <select id="group-select" class="variant-textarea" style="height: 42px; padding: 8px 12px; margin-top: 6px;">
+                                        <option value="">-- Select Saved Group --</option>
+                                    </select>
+                                </div>
+
                                 <div class="upload-options-tabs">
                                     <button class="upload-tab-btn active" data-type="csv">CSV File Upload</button>
                                     <button class="upload-tab-btn" data-type="manual">Manual Paste</button>
@@ -227,6 +241,17 @@
                                         <small class="form-help">Format: phone number (required) followed by comma name, and comma company.</small>
                                     </div>
                                     <button class="btn btn-secondary btn-sm" id="parse-manual-btn">Load Contacts List</button>
+                                </div>
+
+                                <!-- Save Group Panel (Visible when contacts are loaded) -->
+                                <div id="save-group-panel" style="display: none; margin-top: 15px; background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: var(--border-radius-sm); border: 1px dashed var(--glass-border);">
+                                    <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 6px;">Save these contacts as a Group:</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="text" id="new-group-name" class="variant-textarea" style="padding: 6px 10px; font-size: 0.85rem; height: 36px;" placeholder="e.g. BAFFA Members List">
+                                        <button id="save-group-btn" class="btn btn-emerald" style="padding: 6px 12px; font-size: 0.85rem; white-space: nowrap; height: 36px; display: flex; align-items: center; justify-content: center;">
+                                            Save Group
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div class="delay-settings-row">

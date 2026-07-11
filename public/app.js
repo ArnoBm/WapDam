@@ -7,6 +7,7 @@ let whatsappConnected = false;
 let currentActiveTab = 'dashboard';
 let renderedCampaignLogCount = 0;
 let renderedCampaignId = null;
+let contactGroups = [];
 
 // DOM Elements
 const elements = {
@@ -134,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTestSender();
     initHistoryTab();
     initNumberChecker();
+    initContactGroups();
 });
 
 // Toast Alerts Notification Helper
@@ -399,6 +401,8 @@ function resetCsvUploadState() {
     elements.csvStatusBox.style.display = 'none';
     elements.csvFileName.textContent = '';
     elements.csvContactsCount.textContent = '';
+    if (elements.groupSelect) elements.groupSelect.value = '';
+    if (elements.deleteGroupBtn) elements.deleteGroupBtn.style.display = 'none';
     updateStatsUI();
 }
 
@@ -437,6 +441,138 @@ function initManualContactsParser() {
 function updateStatsUI() {
     elements.statPendingQueue.textContent = loadedContacts.length;
     renderContactsQueue();
+    
+    // Toggle Save Group Panel depending on contacts list size
+    if (elements.saveGroupPanel) {
+        if (loadedContacts.length > 0) {
+            elements.saveGroupPanel.style.display = 'block';
+        } else {
+            elements.saveGroupPanel.style.display = 'none';
+        }
+    }
+}
+
+async function loadContactGroups() {
+    try {
+        const res = await fetch('/api/contact-groups');
+        const data = await res.json();
+        if (data.success) {
+            contactGroups = data.groups;
+            
+            // Populate select dropdown options
+            if (elements.groupSelect) {
+                elements.groupSelect.innerHTML = '<option value="">-- Select Saved Group --</option>';
+                
+                contactGroups.forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group.id;
+                    option.textContent = `${group.name} (${group.contactsCount} contacts)`;
+                    elements.groupSelect.appendChild(option);
+                });
+            }
+        }
+    } catch (err) {
+        console.error('Error fetching contact groups:', err);
+    }
+}
+
+function initContactGroups() {
+    loadContactGroups();
+
+    // Dropdown change listener
+    elements.groupSelect.addEventListener('change', (e) => {
+        const groupId = e.target.value;
+        if (!groupId) {
+            resetCsvUploadState();
+            return;
+        }
+
+        const selectedGroup = contactGroups.find(g => g.id === groupId);
+        if (selectedGroup) {
+            loadedContacts = selectedGroup.contacts;
+            
+            // Sync with CSV dropzone metadata UI
+            elements.csvFileInput.value = '';
+            elements.dropZone.style.display = 'none';
+            elements.csvStatusBox.style.display = 'flex';
+            elements.csvFileName.textContent = `Group: ${selectedGroup.name}`;
+            elements.csvContactsCount.textContent = `${selectedGroup.contactsCount} contacts loaded from saved group.`;
+            
+            elements.deleteGroupBtn.style.display = 'inline-flex';
+            
+            showToast(`Loaded group "${selectedGroup.name}" containing ${selectedGroup.contactsCount} contacts.`, 'success');
+            updateStatsUI();
+        }
+    });
+
+    // Save group button listener
+    elements.saveGroupBtn.addEventListener('click', async () => {
+        const name = elements.newGroupName.value.trim();
+        if (!name) {
+            showToast('Please enter a group name.', 'warning');
+            return;
+        }
+
+        if (loadedContacts.length === 0) {
+            showToast('No contacts to save. Load some contacts first.', 'warning');
+            return;
+        }
+
+        try {
+            elements.saveGroupBtn.disabled = true;
+            const res = await fetch('/api/contact-groups', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, contacts: loadedContacts })
+            });
+            const data = await res.json();
+            elements.saveGroupBtn.disabled = false;
+
+            if (data.success) {
+                showToast(`Group "${name}" saved successfully!`, 'success');
+                elements.newGroupName.value = '';
+                
+                // Reload dropdown options and auto-select the newly saved group
+                await loadContactGroups();
+                elements.groupSelect.value = data.group.id;
+                elements.deleteGroupBtn.style.display = 'inline-flex';
+            } else {
+                showToast(data.error || 'Failed to save group.', 'error');
+            }
+        } catch (err) {
+            elements.saveGroupBtn.disabled = false;
+            showToast('Error saving group: ' + err.message, 'error');
+        }
+    });
+
+    // Delete group button listener
+    elements.deleteGroupBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const groupId = elements.groupSelect.value;
+        if (!groupId) return;
+
+        const selectedGroup = contactGroups.find(g => g.id === groupId);
+        const name = selectedGroup ? selectedGroup.name : 'this group';
+
+        if (confirm(`Are you sure you want to delete the group "${name}"?`)) {
+            try {
+                const res = await fetch(`/api/contact-groups/${groupId}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast(`Group "${name}" deleted.`, 'info');
+                    resetCsvUploadState();
+                    loadContactGroups();
+                } else {
+                    showToast(data.error || 'Failed to delete group.', 'error');
+                }
+            } catch (err) {
+                showToast('Error deleting group: ' + err.message, 'error');
+            }
+        }
+    });
 }
 
 function renderContactsQueue() {

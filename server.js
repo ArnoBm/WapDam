@@ -972,6 +972,90 @@ app.post('/api/parse-any-file', upload.single('file'), (req, res) => {
     }
 });
 
+// Contact Groups Database Helper Functions & API Endpoints
+const GROUPS_FILE_PATH = path.join(__dirname, 'data', 'contact_groups.json');
+
+function readContactGroups() {
+    try {
+        if (!fs.existsSync(GROUPS_FILE_PATH)) {
+            const dir = path.dirname(GROUPS_FILE_PATH);
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+            fs.writeFileSync(GROUPS_FILE_PATH, JSON.stringify([]));
+        }
+        return JSON.parse(fs.readFileSync(GROUPS_FILE_PATH, 'utf8'));
+    } catch (e) {
+        console.error('Error reading contact groups:', e);
+        return [];
+    }
+}
+
+function writeContactGroups(groups) {
+    try {
+        const dir = path.dirname(GROUPS_FILE_PATH);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(GROUPS_FILE_PATH, JSON.stringify(groups, null, 2));
+        return true;
+    } catch (e) {
+        console.error('Error writing contact groups:', e);
+        return false;
+    }
+}
+
+// GET all contact groups
+app.get('/api/contact-groups', (req, res) => {
+    const groups = readContactGroups();
+    res.json({ success: true, groups });
+});
+
+// POST save or update a contact group
+app.post('/api/contact-groups', (req, res) => {
+    const { name, contacts } = req.body;
+    if (!name || !contacts || !Array.isArray(contacts) || contacts.length === 0) {
+        return res.status(400).json({ success: false, error: 'Invalid name or empty contacts list.' });
+    }
+
+    const groups = readContactGroups();
+    
+    // Check if group name already exists (case-insensitive) to update it, or add new
+    const existingIdx = groups.findIndex(g => g.name.toLowerCase().trim() === name.toLowerCase().trim());
+    
+    const newGroup = {
+        id: existingIdx !== -1 ? groups[existingIdx].id : 'group_' + Date.now(),
+        name: name.trim(),
+        contactsCount: contacts.length,
+        contacts,
+        createdAt: Date.now()
+    };
+
+    if (existingIdx !== -1) {
+        groups[existingIdx] = newGroup;
+    } else {
+        groups.push(newGroup);
+    }
+
+    writeContactGroups(groups);
+    res.json({ success: true, group: newGroup });
+});
+
+// DELETE a contact group by ID
+app.delete('/api/contact-groups/:id', (req, res) => {
+    const { id } = req.params;
+    let groups = readContactGroups();
+    const initialLength = groups.length;
+    groups = groups.filter(g => g.id !== id);
+
+    if (groups.length === initialLength) {
+        return res.status(404).json({ success: false, error: 'Group not found.' });
+    }
+
+    writeContactGroups(groups);
+    res.json({ success: true, message: 'Group deleted successfully.' });
+});
+
 // Start checks endpoint
 app.post('/api/check-numbers/start', (req, res) => {
     if (whatsappStatus !== 'ready') {
