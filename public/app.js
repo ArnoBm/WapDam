@@ -85,6 +85,26 @@ const elements = {
     queueCountBadge: document.getElementById('queue-count-badge'),
     queueTableBody: document.getElementById('queue-table-body'),
 
+    // Group Selector (Bulk Sender Tab)
+    groupSelect: document.getElementById('group-select'),
+    deleteGroupBtn: document.getElementById('delete-group-btn'),
+
+    // Contact Groups Tab Elements
+    groupCreateName: document.getElementById('group-create-name'),
+    groupFileInput: document.getElementById('group-file-input'),
+    groupDropZone: document.getElementById('group-drop-zone'),
+    groupFileName: document.getElementById('group-file-name'),
+    groupFileCount: document.getElementById('group-file-count'),
+    groupFileStatusBox: document.getElementById('group-file-status-box'),
+    groupClearFileBtn: document.getElementById('group-clear-file-btn'),
+    groupManualInput: document.getElementById('group-manual-input'),
+    groupTabBtnFile: document.getElementById('group-tab-btn-file'),
+    groupTabBtnManual: document.getElementById('group-tab-btn-manual'),
+    groupUploadFileSection: document.getElementById('group-upload-file-section'),
+    groupUploadManualSection: document.getElementById('group-upload-manual-section'),
+    groupCreateSubmitBtn: document.getElementById('group-create-submit-btn'),
+    groupsListContainer: document.getElementById('groups-list-container'),
+
     // History Tab
     historyTableBody: document.getElementById('history-table-body'),
     clearHistoryBtn: document.getElementById('clear-history-btn'),
