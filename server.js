@@ -1071,3 +1071,39 @@ server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
 
+// Auto-updater check loop
+const AUTO_UPDATE_INTERVAL = 5 * 60 * 1000; // Check every 5 minutes
+
+function startAutoUpdater() {
+    console.log('Auto-updater service initialized. Checking for repository updates every 5 minutes...');
+    
+    setInterval(() => {
+        const { exec } = require('child_process');
+        
+        exec('git fetch origin && git status -uno', (err, stdout, stderr) => {
+            if (err) {
+                console.error('Auto-updater fetch error:', err);
+                return;
+            }
+            
+            // Check if local branch is behind origin
+            if (stdout && stdout.includes('Your branch is behind')) {
+                console.log('[Auto-Updater] New updates detected on GitHub. Pulling changes...');
+                
+                exec('git pull origin main', (pullErr, pullStdout, pullStderr) => {
+                    if (pullErr) {
+                        console.error('[Auto-Updater] Pull failed:', pullErr);
+                        return;
+                    }
+                    
+                    console.log('[Auto-Updater] Code successfully updated. Exiting process to trigger system restart...');
+                    process.exit(0); // Exit process; Daemon (PM2 or systemd) will automatically restart it.
+                });
+            }
+        });
+    }, AUTO_UPDATE_INTERVAL);
+}
+
+// Boot the auto-updater
+startAutoUpdater();
+
