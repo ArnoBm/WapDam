@@ -1399,6 +1399,11 @@ input:checked + .slider:before {
 
 .queue-table th {
     font-family: var(--font-heading);
+    position: sticky;
+    top: 0;
+    background: #111a2e; /* Solid background to prevent overlapping on scroll */
+    z-index: 2;
+    border-bottom: 1px solid var(--glass-border);
 }
 
 .queue-table td {
